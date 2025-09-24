@@ -1,4 +1,5 @@
 # Next.js + Prisma + Auth.js + Playwright (AWS-ready)
+![CI](https://github.com/amyru/nextjs-aws-starter/actions/workflows/ci.yml/badge.svg)
 
 A minimal, production-shaped starter:
 - **Next.js (App Router)** + Tailwind

@@ -1,4 +1,4 @@
-# ── Secrets / env ─────────────────────────────
+git# ── Secrets / env ─────────────────────────────
 .env
 .env.local
 .env.*.local
