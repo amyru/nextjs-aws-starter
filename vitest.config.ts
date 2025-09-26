@@ -4,5 +4,11 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './tests/setupTests.ts',
     globals: true,
+    exclude: [
+      'tests/**',
+      'e2e/**',
+      'playwright/**',
+      'node_modules', 'dist', '.next', '.git', 'coverage'
+    ],
   },
 })
