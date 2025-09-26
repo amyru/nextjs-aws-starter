@@ -3,18 +3,23 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "prisma generate && next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:ci": "vitest run --reporter=dot",
-    "test:ui": "vitest",
-    "e2e": "playwright test",
     "postinstall": "prisma generate",
-    "...": "...",
-    "seed": "tsx prisma/seed.ts"
+    "dev": "dotenv -e .env.local -- next dev",
+    "build": "dotenv -e .env.production -- prisma generate && next build",
+    "start": "dotenv -e .env.production -- next start",
+
+    "typecheck": "dotenv -e .env.local -- tsc --noEmit",
+    "lint": "dotenv -e .env.local -- next lint",
+
+    "test": "dotenv -e .env.test -- vitest run",
+    "test:ui": "dotenv -e .env.test -- vitest",
+    "test:ci": "dotenv -e .env.test -- vitest run --reporter=dot",
+    "e2e": "dotenv -e .env.test -- playwright test",
+
+    "migrate:dev": "dotenv -e .env.local -- prisma migrate dev",
+    "migrate:test": "dotenv -e .env.test -- prisma migrate reset --force && prisma migrate deploy",
+    "seed": "dotenv -e .env.local -- tsx prisma/seed.ts",
+    "whoami:env": "dotenv -e .env.test -- node -e \"console.log(process.env.NEXTAUTH_SECRET)\""
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -38,6 +43,7 @@
     "@types/node": "^20.11.30",
     "@types/react": "^18.3.24",
     "autoprefixer": "^10.4.20",
+    "dotenv-cli": "^10.0.0",
     "eslint": "8.57.0",
     "eslint-config-next": "14.2.5",
     "jsdom": "^27.0.0",
