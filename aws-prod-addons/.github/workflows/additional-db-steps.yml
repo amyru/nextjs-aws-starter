@@ -1,0 +1,21 @@
+# .github/workflows/additional-db-steps.yml (example snippet; merge into your CI if you prefer)
+name: DB Checks (Example)
+on:
+  workflow_dispatch:
+
+jobs:
+  db-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - name: Prisma generate
+        run: npx prisma generate
+      - name: DB Health Check
+        run: npm run db:check
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}

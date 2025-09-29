@@ -1,0 +1,25 @@
+# amplify.yml — Explicit build settings for Amplify Hosting (Next.js + Prisma)
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm ci
+        - npx prisma generate
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+
+# Environment variables should be set in Amplify Console:
+#  - NEXTAUTH_URL
+#  - NEXTAUTH_SECRET
+#  - DATABASE_URL            (production runtime)
+#  - Optional: GITHUB_ID, GITHUB_SECRET
+#  - Optional for uploads later: AWS_REGION, S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY

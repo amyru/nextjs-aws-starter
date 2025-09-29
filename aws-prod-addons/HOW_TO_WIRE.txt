@@ -1,0 +1,11 @@
+Add this npm script in your package.json:
+  "scripts": {
+    "...": "...",
+    "db:check": "tsx scripts/db-check.ts"
+  }
+
+If you don't have tsx installed yet:
+  npm i -D tsx
+
+Run locally:
+  DATABASE_URL='postgresql://nextapp_user:ENCODED@HOST:5432/nextapp?sslmode=require' npm run db:check

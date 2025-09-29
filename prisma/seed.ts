@@ -1,5 +1,9 @@
 import { prisma } from '../src/lib/db'
 import { hash } from 'bcryptjs'
+import dotenv from 'dotenv';
+
+dotenv.config({ path: process.env.ENV_FILE ?? '.env.local' });
+console.log('[seed] DATABASE_URL =', process.env.DATABASE_URL);
 
 async function main() {
   const email = 'demo@example.com'
