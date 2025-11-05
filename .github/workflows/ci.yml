@@ -28,6 +28,11 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci
+      - name: Prisma migrate deploy (main only)
+        if: github.ref == 'refs/heads/main'
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
@@ -44,8 +49,3 @@ jobs:
           NEXTAUTH_URL: http://localhost:3000
           NEXTAUTH_SECRET: testsecret
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nextapp?schema=public
-      - name: Prisma migrate deploy (main only)
-        if: github.ref == 'refs/heads/main'
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
