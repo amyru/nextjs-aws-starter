@@ -28,11 +28,6 @@ jobs:
           node-version: "20"
           cache: "npm"
       - run: npm ci
-      - name: Prisma migrate deploy (main only)
-        if: github.ref == 'refs/heads/main'
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
@@ -41,6 +36,11 @@ jobs:
         run: npm run start &
       - name: Wait for server
         run: npx wait-on http://localhost:3000
+      - name: Prisma migrate deploy (main only)
+        if: github.ref == 'refs/heads/main'
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: E2E
