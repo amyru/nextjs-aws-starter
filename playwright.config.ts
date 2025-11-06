@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
-import 'dotenv/config'
+import dotenv from 'dotenv'
+
+if (!process.env.CI) {
+ dotenv.config({ path: '.env.test' })
+}
 
 export default defineConfig({
   testDir: './tests',
@@ -11,17 +15,12 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'retain-on-failure',
   },
-  projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
-  ],
-  // Ensure envs are present AND start the app for tests
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    // uses dotenv-cli to load .env.test for the dev server
-    command: 'dotenv -e .env.test -- npm run dev',
+    command: 'npm run dev',          
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 120_000,
-    env: { NODE_ENV: 'test' }, // optional; fine to omit if you prefer
   },
   globalSetup: './tests/global-setup.ts',
 })

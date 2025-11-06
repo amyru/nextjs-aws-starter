@@ -8,44 +8,57 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     services:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: nextapp
+          POSTGRES_USER: nextapp_user
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD_E2E }}
+          POSTGRES_DB: nextapp_e2e
         ports: ["5432:5432"]
         options: >-
-          --health-cmd="pg_isready -U postgres"
+          --health-cmd="pg_isready -U nextapp_user -d nextapp_e2e -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+
+    env:
+      # ephemeral DB
+      DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: testsecret
+      E2E_EMAIL: ${{ secrets.E2E_EMAIL }}
+      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
+
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run test
+
+      # DB schema BEFORE starting the app and e2e
+      - name: Prisma migrate deploy (ephemeral DB)
+        run: npx prisma migrate deploy
+
       - run: npm run build
+
+      # Start Next.js (prod) and wait until it's ready
       - name: Start Next server
-        run: npm run start &
+        run: nohup npm run start &
+
       - name: Wait for server
         run: npx wait-on http://localhost:3000
-      - name: Prisma migrate deploy (main only)
-        if: github.ref == 'refs/heads/main'
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL_MIGRATE }}
+
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+
       - name: E2E
-        run: npm run e2e
-        env:
-          NEXTAUTH_URL: http://localhost:3000
-          NEXTAUTH_SECRET: testsecret
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nextapp?schema=public
+        run: npx playwright test
